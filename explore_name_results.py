@@ -6,11 +6,52 @@ Run this to see:
 - Learning curve fits
 - Model performance comparison
 - Sample learning trajectories
+
+Usage:
+    poetry run python explore_name_results.py
+
+Requirements:
+    Run 'poetry install' first to install dependencies.
+    Run 'poetry run dvc repro plot_name_results' to generate data.
 """
 
-import pandas as pd
-import numpy as np
-import json
+import sys
+
+# Check dependencies with helpful error messages
+try:
+    import pandas as pd
+    import numpy as np
+    import json
+except ImportError as e:
+    print("❌ Missing dependencies!")
+    print(f"\nError: {e}")
+    print("\nTo install dependencies, run:")
+    print("  poetry install")
+    print("\nOr use pip:")
+    print("  pip install pandas numpy")
+    sys.exit(1)
+
+# Check that data files exist
+from pathlib import Path
+
+required_files = [
+    'data/wrangled/name_learning_curves.csv',
+    'data/wrangled/name_horizons.csv',
+    'data/external/name_runs.jsonl'
+]
+
+missing_files = [f for f in required_files if not Path(f).exists()]
+
+if missing_files:
+    print("❌ Missing data files!")
+    print("\nCannot find:")
+    for f in missing_files:
+        print(f"  - {f}")
+    print("\nTo generate data, run:")
+    print("  poetry run dvc repro plot_name_results")
+    print("\nOr check setup:")
+    print("  poetry run python check_setup.py")
+    sys.exit(1)
 
 # Load results
 learning_curves = pd.read_csv("data/wrangled/name_learning_curves.csv")
